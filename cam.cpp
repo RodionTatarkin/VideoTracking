@@ -26,7 +26,6 @@ Cam::Cam(QWidget *parent) :
 {
     QDialog * m_selectDialog;
     QList <QByteArray> cameras = QCamera::availableDevices();
-    QStringList services;
     time = 0;
     if (cameras.count() == 0)
     {
@@ -116,7 +115,7 @@ void Cam::setCamera()
     m_camera->setViewfinder(m_viewfinder);
 
     m_captureButton->setEnabled(true);
-    m_stopButton->setEnabled(false);
+    m_stopButton->setEnabled(true);
     //updateRecorderState(m_mediaRecorder->state());
 
 
@@ -146,6 +145,15 @@ void Cam::setCamera()
    m_camera->start();
 }
 
+void Cam::downloadingVideo()
+{
+    QMessageBox messageBox(this);
+    messageBox.setText("Now we're going to download Video to geo2tag");
+    messageBox.setStandardButtons(QMessageBox::Ok);
+    messageBox.setDefaultButton(QMessageBox::Ok);
+    messageBox.exec();
+}
+
 void Cam::updateRecorderState(QMediaRecorder::State state)
 {
     switch (state) {
@@ -153,6 +161,7 @@ void Cam::updateRecorderState(QMediaRecorder::State state)
         m_captureButton->setEnabled(true);
         m_stopButton->setEnabled(false);
         source->stopUpdates();
+        downloadingVideo();
         break;
     case QMediaRecorder::PausedState:
         m_captureButton->setEnabled(true);
@@ -165,6 +174,7 @@ void Cam::updateRecorderState(QMediaRecorder::State state)
         break;
     }
 }
+
 
 void Cam::updateRecordTime()
 {
@@ -189,7 +199,7 @@ void Cam::record()
     QFileDialog fileDialog(NULL);
     fileDialog.setFileMode(QFileDialog::AnyFile);
     fileDialog.setAcceptMode(QFileDialog::AcceptSave);
-    if (fileDialog.exec())
+    if (fileDialog.exec() == QDialog::Accepted)
     {
         qDebug() << fileDialog.selectedFiles();
         m_mediaRecorder->setOutputLocation(QUrl(fileDialog.selectedFiles().first()));
@@ -211,6 +221,8 @@ void Cam::stop()
     m_mediaRecorder->stop();
 
     source->stopUpdates();
+    qDebug() << currentVideo->geoTags << currentVideo->pathVideo;
+    downloadingVideo();
 }
 
 /*void Cam::capture()

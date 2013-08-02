@@ -53,6 +53,8 @@ public slots:
 
     void positionUpdated(QGeoPositionInfo info);
 
+    void downloadingVideo();
+
     
 };
 
