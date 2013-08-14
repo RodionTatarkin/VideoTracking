@@ -38,6 +38,7 @@ public:
     void timerEvent(QTimerEvent *);
     
 signals:
+    void downloadVideo();
     
 public slots:
     void updateRecorderState(QMediaRecorder::State state);

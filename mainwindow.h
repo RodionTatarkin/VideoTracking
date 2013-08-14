@@ -6,6 +6,7 @@
 #include <QMenuBar>
 #include <QMenu>
 #include "cam.h"
+#include "downloadvideowidget.h"
 
 class QMenu;
 class QAction;
@@ -15,22 +16,23 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = 0);
-    
+
 signals:
-    
+
 private slots:
     void newVideo();
+    void downloadVideo();
 
 private:
     void createActions();
     void createMenus();
 
     Cam * cameraWidget;
+    downloadVideoWidget * m_downloadVideoWidget;
 
     QAction * exitAction;
     QAction * newVideoAction;
-    QAction * requestAction;
-    QAction * openVideoAction;
+    QAction * downloadVideoAction;
 
     QMenu * actionMenu;
     

@@ -147,11 +147,24 @@ void Cam::setCamera()
 
 void Cam::downloadingVideo()
 {
+    int ret;
     QMessageBox messageBox(this);
-    messageBox.setText("Now we're going to download Video to geo2tag");
-    messageBox.setStandardButtons(QMessageBox::Ok);
+    messageBox.setText("Would you like to download your video to the ftp server and after to geo2tag?");
+    messageBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     messageBox.setDefaultButton(QMessageBox::Ok);
-    messageBox.exec();
+    messageBox.setIcon(QMessageBox::Question);
+    ret = messageBox.exec();
+    switch(ret)
+    {
+    case QMessageBox::Ok:
+        emit(downloadVideo());
+        break;
+    case QMessageBox::Cancel:
+        break;
+    default:
+        break;
+    }
+
 }
 
 void Cam::updateRecorderState(QMediaRecorder::State state)

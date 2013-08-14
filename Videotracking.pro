@@ -28,15 +28,27 @@ SOURCES += main.cpp \
     videowidget.cpp \
     player.cpp \
     mainwindow.cpp \
-    geovideo.cpp
+    geovideo.cpp \
+    logindialog.cpp \
+    channeldialog.cpp \
+    downloadvideowidget.cpp \
+    ftpdialog.cpp
 HEADERS += \
     cam.h \
     videowidget.h \
     player.h \
     mainwindow.h \
-    geovideo.h
+    geovideo.h \
+    logindialog.h \
+    channeldialog.h \
+    downloadvideowidget.h \
+    ftpdialog.h
 FORMS +=
 
 # Please do not modify the following two lines. Required for deployment.
 include(deployment.pri)
 qtcAddDeployment()
+
+RESOURCES += \
+    images.qrc
+QT += network
