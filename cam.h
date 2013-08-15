@@ -38,7 +38,7 @@ public:
     void timerEvent(QTimerEvent *);
     
 signals:
-    void downloadVideo();
+    void downloadVideo(QString pathToVideoFile);
     
 public slots:
     void updateRecorderState(QMediaRecorder::State state);

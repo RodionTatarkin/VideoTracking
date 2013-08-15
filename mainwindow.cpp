@@ -17,11 +17,11 @@ void MainWindow::newVideo()
     newVideoAction->setDisabled(TRUE);
 
     cameraWidget = new Cam(this);
-    connect(cameraWidget, SIGNAL(downloadVideo()), this, SLOT(downloadVideo()));
+    connect(cameraWidget, SIGNAL(downloadVideo(QString)), this, SLOT(downloadVideo(QString)));
     setCentralWidget(cameraWidget);
 }
 
-void MainWindow::downloadVideo()
+void MainWindow::downloadVideo(QString pathToVideoFile)
 {
     downloadVideoAction->setDisabled(TRUE);
 
@@ -36,7 +36,7 @@ void MainWindow::downloadVideo()
     messageBox.setIcon(QMessageBox::Information);
     messageBox.exec();
 
-    m_downloadVideoWidget->onStartDownloadingVideo();
+    m_downloadVideoWidget->onStartDownloadingVideo(pathToVideoFile);
 
     // -- Login --
     /*LoginDialog loginDialog(this);

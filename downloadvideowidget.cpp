@@ -139,11 +139,11 @@ void downloadVideoWidget::onSubscribedChannelsSuccess()
 }
 
 
-void downloadVideoWidget::onStartDownloadingVideo()
+void downloadVideoWidget::onStartDownloadingVideo(QString pathToVideoFile)
 {
 
     // -- ftp server --
-    FtpDialog ftpDialog(this);
+    FtpDialog ftpDialog(this, pathToVideoFile);
     ftpDialog.exec();
 
 

@@ -17,30 +17,47 @@ class FtpDialog : public QDialog
 {
     Q_OBJECT
 
-    QLabel *ftpServerLabel;
-    QLineEdit *ftpServerLineEdit;
-    QLabel *statusLabel;
-    QTreeWidget *fileList;
-    QPushButton *cdToParentButton;
-    QPushButton *connectButton;
-    QPushButton *downloadButton;
-    QPushButton *quitButton;
-    QDialogButtonBox *buttonBox;
-    QProgressDialog *progressDialog;
+    QLabel * ftpServerLabel;
+    QLineEdit * ftpServerLineEdit;
+    QLabel * statusLabel;
+    QTreeWidget * fileList;
+    QPushButton * cdToParentButton;
+    QPushButton * connectButton;
+    QPushButton * uploadButton;
+    QPushButton * quitButton;
+    //QDialogButtonBox * buttonBox;
+    QProgressDialog * progressDialog;
 
     QHash<QString, bool> isDirectory;
     QString currentPath;
-    QFtp *ftp;
-    QFile *file;
+    QFtp * ftp;
+    QFile * file;
 
-    QNetworkSession *networkSession;
+    QNetworkSession * networkSession;
+
+    QString m_pathToVideoFile;
 
 public:
-    explicit FtpDialog(QWidget *parent = 0);
+    explicit FtpDialog(QWidget *parent = 0, QString pathToVideoFile = 0);
     
 signals:
     
-public slots:
+private slots:
+    void enableConnectButton();
+
+    //void enableDownloadButton();
+
+    void onConnectOrDisconnect();
+
+    void ftpCommandFinished(int commandId, bool error);
+    void addToList(const QUrlInfo &urlInfo);
+    void updateDataTransferProgress(qint64 readBytes, qint64 totalBytes);
+
+    void processItem(QTreeWidgetItem * item, int column);
+
+    void uploadFile();
+
+    void cdToParent();
     
 };
 

@@ -39,7 +39,7 @@ public:
 signals:
     
 public slots:
-    void onStartDownloadingVideo();
+    void onStartDownloadingVideo(QString pathToVideoFile);
     
 };
 

@@ -157,7 +157,7 @@ void Cam::downloadingVideo()
     switch(ret)
     {
     case QMessageBox::Ok:
-        emit(downloadVideo());
+        emit(downloadVideo(currentVideo->pathVideo));
         break;
     case QMessageBox::Cancel:
         break;

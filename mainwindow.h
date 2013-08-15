@@ -21,7 +21,7 @@ signals:
 
 private slots:
     void newVideo();
-    void downloadVideo();
+    void downloadVideo(QString pathToVideoFile);
 
 private:
     void createActions();
