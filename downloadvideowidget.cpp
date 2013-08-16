@@ -144,9 +144,10 @@ void downloadVideoWidget::onStartDownloadingVideo(QString pathToVideoFile)
 
     // -- ftp server --
     FtpDialog ftpDialog(this, pathToVideoFile);
-    ftpDialog.exec();
-
-
+    if (ftpDialog.exec())
+    {
+        ftpDialog.getUrlToVideoFile();
+    }
 
 
     // -- Login --
@@ -171,4 +172,6 @@ void downloadVideoWidget::onStartDownloadingVideo(QString pathToVideoFile)
         m_loginQuery->setQuery(login, password);
         m_loginQuery->doRequest();
     }*/
+
+    formChannelList();
 }

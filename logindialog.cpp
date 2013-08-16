@@ -39,6 +39,8 @@ LoginDialog::LoginDialog(QWidget *parent) :
     //m_userActionButton->setFocus();
     m_userActionButton->setAutoDefault(true);
     connect(m_userActionButton, SIGNAL(clicked()), this, SLOT(accept()));
+
+    setWindowTitle("geo2tag Login");
 }
 
 QString LoginDialog::getLogin()

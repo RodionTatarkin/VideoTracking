@@ -39,6 +39,8 @@ class FtpDialog : public QDialog
 
 public:
     explicit FtpDialog(QWidget *parent = 0, QString pathToVideoFile = 0);
+
+    QString getUrlToVideoFile();
     
 signals:
     

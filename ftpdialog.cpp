@@ -48,7 +48,7 @@ FtpDialog::FtpDialog(QWidget *parent, QString pathToVideoFile) :
 
     progressDialog = new QProgressDialog(this);
 
-    connect(quitButton, SIGNAL(clicked()), this, SLOT(close()));
+    connect(quitButton, SIGNAL(clicked()), this, SLOT(reject()));
 
     connect(connectButton, SIGNAL(clicked()), this, SLOT(onConnectOrDisconnect()));
 
@@ -236,44 +236,26 @@ void FtpDialog::ftpCommandFinished(int commandId, bool error)
 
     if (ftp->currentCommand() == QFtp::Put)
     {
-        if (error)
+        if (error == false)
         {
-            //qDebug() << ftp->errorString();
-            statusLabel->setText(tr("Canceled download of %1.").arg(file->fileName()));
-            file->close();
+            qDebug() << ftp->errorString();
+            statusLabel->setText(tr("Canceled download of %1. If you want, try again!").arg(file->fileName()));
+            QMessageBox::information(this, tr("FTP"), tr("Unable to upload the file %1 to %2: %3").arg(file->fileName()).arg(ftpServerLineEdit->text()).arg(ftp->errorString()));
+            uploadButton->setEnabled(true);
+            quitButton->setEnabled(true);
+            connectButton->setEnabled(true);
+            fileList->setEnabled(true);
         }
         else
         {
             statusLabel->setText(tr("Uploaded %1 to current directory.").arg(file->fileName()));
-            file->close();
+            cdToParentButton->setEnabled(false);
+            QMessageBox::information(this, tr("FTP"), tr("The file was successfully uploaded to %1").arg(ftpServerLineEdit->text()));
+            accept();
         }
         delete file;
-        progressDialog->hide();
+        //progressDialog->hide();
     }
-
-    /*if (ftp->currentCommand() == QFtp::Get) {
-        if (error) {
-            statusLabel->setText(tr("Canceled download of %1.")
-                                 .arg(file->fileName()));
-            file->close();
-            file->remove();
-        } else {
-            statusLabel->setText(tr("Downloaded %1 to current directory.")
-                                 .arg(file->fileName()));
-            file->close();
-        }
-        delete file;
-        enableDownloadButton();
-        progressDialog->hide();
-//![8]
-//![9]
-    } else if (ftp->currentCommand() == QFtp::List) {
-        if (isDirectory.isEmpty()) {
-            fileList->addTopLevelItem(new QTreeWidgetItem(QStringList() << tr("<empty>")));
-            fileList->setEnabled(false);
-        }
-    }*/
-    //![9]
 }
 
 void FtpDialog::addToList(const QUrlInfo & urlInfo)
@@ -285,7 +267,7 @@ void FtpDialog::addToList(const QUrlInfo & urlInfo)
     item->setText(3, urlInfo.group());
     item->setText(4, urlInfo.lastModified().toString("MMM dd yyyy"));
 
-    QPixmap pixmap(urlInfo.isDir() ? ":/images/dir.  png" : ":/images/file.png");
+    QPixmap pixmap(urlInfo.isDir() ? ":/images/dir.png" : ":/images/file.png");
     item->setIcon(0, pixmap);
 
     isDirectory[urlInfo.name()] = urlInfo.isDir();
@@ -319,9 +301,10 @@ void FtpDialog::processItem(QTreeWidgetItem * item, int column)
 
 void FtpDialog::uploadFile()
 {
-    qDebug() << QFile::exists(m_pathToVideoFile);
+    //qDebug() << "!" << QFile::exists(m_pathToVideoFile) << "!";
 
-    file = new QFile(m_pathToVideoFile);
+    file = new QFile("D:/VideoTracking/Videotracking-build-simulator-Simulator_Qt_for_MinGW_4_4__Qt_SDK_______/copyrightnotice.txt");
+    qDebug() << "!" << QFile::exists("D:/VideoTracking/Videotracking-build-simulator-Simulator_Qt_for_MinGW_4_4__Qt_SDK_______/copyrightnotice.txt") << "!";
     /*if (!file->open(QIODevice::WriteOnly)) {
         QMessageBox::information(this, tr("FTP"),
                                  tr("Unable to save the file %1: %2.")
@@ -330,11 +313,14 @@ void FtpDialog::uploadFile()
         return;
     }*/
 
-    ftp->put(file, "newFile");
+    ftp->put(file, "myNewVideoFile.txt", QFtp::Ascii);
 
-    progressDialog->setLabelText(tr("Downloading %1...").arg(m_pathToVideoFile));
+    //progressDialog->setLabelText(tr("Downloading %1...").arg(m_pathToVideoFile));
     uploadButton->setEnabled(false);
-    progressDialog->exec();
+    quitButton->setEnabled(false);
+    connectButton->setEnabled(false);
+    fileList->setEnabled(false);
+    //progressDialog->exec();
 }
 
 void FtpDialog::cdToParent()
@@ -361,3 +347,8 @@ void FtpDialog::updateDataTransferProgress(qint64 readBytes, qint64 totalBytes)
 {
 }
 
+QString FtpDialog::getUrlToVideoFile()
+{
+    qDebug() << currentPath;
+    return currentPath;
+}
