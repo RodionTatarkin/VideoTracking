@@ -32,7 +32,8 @@ SOURCES += main.cpp \
     logindialog.cpp \
     channeldialog.cpp \
     downloadvideowidget.cpp \
-    ftpdialog.cpp
+    ftpdialog.cpp \
+    createchanneldialog.cpp
 HEADERS += \
     cam.h \
     videowidget.h \
@@ -42,7 +43,8 @@ HEADERS += \
     logindialog.h \
     channeldialog.h \
     downloadvideowidget.h \
-    ftpdialog.h
+    ftpdialog.h \
+    createchanneldialog.h
 FORMS +=
 
 # Please do not modify the following two lines. Required for deployment.

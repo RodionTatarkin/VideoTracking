@@ -3,6 +3,9 @@
 
 #include <QWidget>
 #include <QLabel>
+#include "logindialog.h"
+#include "channeldialog.h"
+#include "createchanneldialog.h"
 
 class downloadVideoWidget : public QWidget
 {
@@ -10,9 +13,16 @@ class downloadVideoWidget : public QWidget
 
     QLabel * m_downloadVideoLabel;
 
+    LoginDialog * loginDialog;
+    ChannelDialog * channelDialog;
+    CreateChannelDialog * createChannelDialog;
+
     //Session m_session;
 
-    /*LoginQuery * m_loginQuery;
+    /*QList<Channel> m_subscribedChannels;
+    QList<Channel> m_availableChannels;
+
+    LoginQuery * m_loginQuery;
     AddUserQuery * m_addUserQuery;
     AvailableChannelsQuery * m_availableChannelsQuery;
     SubscribedChannelsQuery * m_subscribedChannelsQuery;
@@ -32,6 +42,20 @@ private slots:
     void onLoginSuccess();
     void onAvailableChannelsSuccess();
     void onSubscribedChannelsSuccess();
+    void onWriteTagSuccess();
+    void onChannelSubscribeSuccess();
+    void onApplyChannelSuccess();
+
+    //void onRequestError(int errno);
+    void onLoginRequestError(int err);
+    void onChannelRequestError(int err);
+    void onChannelSubscribeRequestError(int err);
+    void onApplyChannelRequestError(int err);
+
+    void onLoginAccepted();
+    void onChannelAccepted();
+    void onSubscribeAccepted();
+    void onAddChannelAccepted();
 
 public:
     explicit downloadVideoWidget(QWidget *parent = 0);

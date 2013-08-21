@@ -33,9 +33,11 @@ public:
     QString getEmail();
     
 signals:
+    void onAccepted();
     
 private slots:
     void onRegisterCheckBox(int state);
+    void onUserActionButton();
     
 };
 

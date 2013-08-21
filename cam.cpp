@@ -139,7 +139,7 @@ void Cam::setCamera()
    m_mediaRecorder->stop();
    m_mediaRecorder->record();
 
-   qDebug() << m_camera->isCaptureModeSupported(QCamera::CaptureStillImage );
+   qDebug() << m_camera->isCaptureModeSupported(QCamera::CaptureStillImage);
    m_camera->setCaptureMode(QCamera::CaptureVideo);
    //m_camera->setCaptureMode(QCamera::CaptureStillImage);
    m_camera->start();

@@ -1,6 +1,7 @@
 #include "logindialog.h"
 #include <assert.h>
 #include <QVBoxLayout>
+#include <QMessageBox>
 
 LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent)
@@ -37,8 +38,8 @@ LoginDialog::LoginDialog(QWidget *parent) :
 
     m_userActionButton->setDefault(true);
     //m_userActionButton->setFocus();
-    m_userActionButton->setAutoDefault(true);
-    connect(m_userActionButton, SIGNAL(clicked()), this, SLOT(accept()));
+    //m_userActionButton->setAutoDefault(true);
+    connect(m_userActionButton, SIGNAL(clicked()), this, SLOT(onUserActionButton()));
 
     setWindowTitle("geo2tag Login");
 }
@@ -83,3 +84,18 @@ void LoginDialog::onRegisterCheckBox(int state)
         email = false;
     }
 }
+
+void LoginDialog::onUserActionButton()
+{
+    if (m_loginEdit->text().isEmpty() || m_passwordEdit->text().isEmpty() || (email && m_emailEdit->text().isEmpty()))
+        QMessageBox::warning(this, tr("Not enough information"), tr("Not all fields are filled"));
+    else
+    {
+#ifndef QT_NO_CURSOR
+        setCursor(Qt::WaitCursor);
+#endif
+        setEnabled(false);
+        emit(onAccepted());
+    }
+}
+

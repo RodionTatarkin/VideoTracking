@@ -4,7 +4,8 @@
 #include <QDialog>
 #include <QListWidget>
 #include <QPushButton>
-#include <QTextEdit>
+#include <QLineEdit>
+#include <QLabel>
 
 class ChannelDialog : public QDialog
 {
@@ -12,16 +13,27 @@ class ChannelDialog : public QDialog
 
     QListWidget * m_channelsListWidget;
     QPushButton * m_selectButton;
-    QTextEdit * m_nameEdit;
-    QTextEdit *  m_latatitudeEdit;
-    QTextEdit * m_longitudeEdit;
+    QLineEdit * m_nameEdit;
+    QLineEdit *  m_latatitudeEdit;
+    QLineEdit * m_longitudeEdit;
+    QLabel * m_nameLabel;
+    QLabel * m_longitudeLabel;
+    QLabel * m_latatitudeLabel;
 
 public:
-    explicit ChannelDialog(QWidget *parent = 0);
+    explicit ChannelDialog(/*QList<Channel> m_subscribedChannels,*/ QWidget *parent = 0);
     
 signals:
+    void onAccepted();
     
-public slots:
+private slots:
+    void onSelectButton();
+
+public:
+    QString getName();
+    QString getLongitude();
+    QString getLatatitude();
+    QString getChannelName();
     
 };
 
