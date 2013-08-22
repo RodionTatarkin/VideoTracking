@@ -2,29 +2,32 @@
 #include <QVBoxLayout>
 #include <QMessageBox>
 
-CreateChannelDialog::CreateChannelDialog(/*QList<Channel> m_availableChannels,*/QWidget *parent) :
+CreateChannelDialog::CreateChannelDialog(QList<Channel> m_availableChannels, QWidget *parent) :
     QDialog(parent)
 {
     m_channelsListWidget = new QListWidget(this);
-    /*foreach (Channel s, m_availableChannels)
+    foreach (Channel s, m_availableChannels)
     {
         QListWidgetItem * item = new QListWidgetItem(s.getName());
-        listWidget->addItem(item);
+        m_channelsListWidget->addItem(item);
     }
-    m_channelsListWidget->setCurrentRow(1);*/
+    m_channelsListWidget->setCurrentRow(1);
 
     m_subscribeButton = new QPushButton("Subscribe", this);
     connect(m_subscribeButton, SIGNAL(clicked()), this, SLOT(onSubscribeChannelButton()));
 
     m_channelNameLabel = new QLabel("Channel name", this);
+    m_channelNameLabel->setAlignment(Qt::AlignCenter);
 
     m_channelNameEdit = new QLineEdit(this);
 
     m_descriptionLabel = new QLabel("Description", this);
+    m_descriptionLabel->setAlignment(Qt::AlignCenter);
 
     m_descriptionEdit = new QLineEdit(this);
 
     m_urlLabel = new QLabel("Url", this);
+    m_urlLabel->setAlignment(Qt::AlignCenter);
 
     m_urlEdit = new QLineEdit(this);
 

@@ -6,10 +6,13 @@
 #include <QDebug>
 #include <QMessageBox>
 #include "errno.h"
+#include "SettingsStorage.h"
 
 downloadVideoWidget::downloadVideoWidget(QWidget *parent) :
     QWidget(parent)
 {
+    SettingsStorage::init();
+
     m_downloadVideoLabel = new QLabel(this);
     m_downloadVideoLabel->setText("Downloading Video");
     m_downloadVideoLabel->setAlignment(Qt::AlignCenter);
@@ -23,22 +26,20 @@ downloadVideoWidget::downloadVideoWidget(QWidget *parent) :
 
 void downloadVideoWidget::initQueries()
 {
-    /*m_loginQuery = new LoginQuery(this);
+    m_loginQuery = new LoginQuery(this);
     m_addUserQuery = new AddUserQuery(this);
-    m_availableChannelsQuery = new AvailableChannelsQuery(this);
-    m_subscribedChannelsQuery = new SubscribedChannelsQuery(this);
-    m_subscribeChannelQuery = new SubscribeChannelQuery(this);
-    m_writeTagQuery = new WriteTagQuery(this);
-    m_applyChannelQuery = new ApplyChannelQuery(this);
+    m_availableChannelsQuery = new AvailableChannelsQuery();
+    m_subscribedChannelsQuery = new SubscribedChannelsQuery();
+    m_subscribeChannelQuery = new SubscribeChannelQuery();
+    m_writeTagQuery = new WriteTagQuery();
+    m_applyChannelQuery = new ApplyChannelQuery();
 
 
     connect(m_loginQuery,SIGNAL(success()),this, SLOT(onLoginSuccess()));
-    connect(m_loginQuery,SIGNAL(errorOccured(int)),this, SLOT(onRequestError(int)));
-    connect(m_loginQuery, SIGNAL(qrrorOccured(int)), this, SLOT(onLoginRequestError(int)));
-
-    connect(m_loginQuery, SIGNAL(success()), this, SLOT(onLoginSuccess()));
-    connect(m_addUserQuery,SIGNAL(errorOccured(int)),this, SLOT(onRequestError(int)));
     connect(m_loginQuery, SIGNAL(errorOccured(int)), this, SLOT(onLoginRequestError(int)));
+
+    connect(m_addUserQuery, SIGNAL(success()), this, SLOT(onLoginSuccess()));
+    connect(m_addUserQuery, SIGNAL(errorOccured(int)), this, SLOT(onLoginRequestError(int)));
 
     connect(m_availableChannelsQuery,SIGNAL(success()),this, SLOT(onAvailableChannelsSuccess()));
     connect(m_availableChannelsQuery,SIGNAL(errorOccured(int)),this, SLOT(onRequestError(int)));
@@ -54,12 +55,11 @@ void downloadVideoWidget::initQueries()
 
     connect(m_writeTagQuery, SIGNAL(success()), this, SLOT(onWriteTagSuccess()));
     connect(m_writeTagQuery, SIGNAL(errorOccured(int)), this, SLOT(onChannelRequestError(int)));
-    connect(m_writeTagQuery,SIGNAL(errorOccured(int)),this, SLOT(onRequestError(int)));*/
 }
 
 void downloadVideoWidget::onLoginSuccess()
 {
-    /*qDebug() << "Recieved session token! " << m_loginQuery->getSession();
+    qDebug() << "Recieved session token! " << m_loginQuery->getSession();
 
 #ifndef QT_NO_CURSOR
         setCursor(Qt::ArrowCursor);
@@ -71,26 +71,24 @@ void downloadVideoWidget::onLoginSuccess()
 
     m_availableChannelsQuery->setQuery(m_session);
     m_availableChannelsQuery->doRequest();
-
-    */
 }
 
 void downloadVideoWidget::getSubscribedChannels()
 {
-    /*m_subscribedChannelsQuery->setQuery(m_session);
-    m_subscribedChannelsQuery->doRequest();*/
+    m_subscribedChannelsQuery->setQuery(m_session);
+    m_subscribedChannelsQuery->doRequest();
 }
 
 void downloadVideoWidget::onAvailableChannelsSuccess()
 {
-    /*qDebug() <<"MainWindow::onAvailableChannelsSuccess()";
+    qDebug() <<"MainWindow::onAvailableChannelsSuccess()";
 
-    getSubscribedChannels();*/
+    getSubscribedChannels();
 }
 
 void downloadVideoWidget::formChannelList()
 {
-    /*if (m_subscribedChannelsQuery->getChannels().size() == 0)
+    if (m_subscribedChannelsQuery->getChannels().size() == 0)
     {
         QMessageBox::information(this, "Channels", "you don't have subscribed Channels. You have to create one or subscribe");
         m_availableChannels = m_availableChannelsQuery->getChannels();
@@ -107,14 +105,14 @@ void downloadVideoWidget::formChannelList()
         channelDialog = new ChannelDialog(m_subscribedChannels, this);
         connect(channelDialog, SIGNAL(onAccepted()), this, SLOT(onChannelAccepted()));
         channelDialog->exec();
-    }*/
+    }
 }
 
 void downloadVideoWidget::onSubscribedChannelsSuccess()
 {
-    /*qDebug()<<"MainWindow::onSubscribedChannelsSuccess()";
+    qDebug()<<"MainWindow::onSubscribedChannelsSuccess()";
 
-    formChannelList();*/
+    formChannelList();
 }
 
 void downloadVideoWidget::onWriteTagSuccess()
@@ -160,6 +158,8 @@ void downloadVideoWidget::onLoginRequestError(int err)
     /*QMessageBox::warning(this, "Error Occured", "Error processing "+
                          QString(this->sender()->metaObject()->className())+", errno = " +
                          QString::number(err)+", type = " + Errno::initErrnoMap().value(err));*/
+    QMessageBox::warning(this, "Error Uccured", "Error:" + QString::number(err) + "Try Again");
+
     loginDialog->setEnabled(true);
 }
 
@@ -177,6 +177,7 @@ void downloadVideoWidget::onChannelRequestError(int err)
     /*QMessageBox::warning(this, "Error Occured", "Error processing "+
                          QString(this->sender()->metaObject()->className())+", errno = " +
                          QString::number(err)+", type = " + Errno::initErrnoMap().value(err));*/
+    QMessageBox::warning(this, "Error Uccured", "Error:" + QString::number(err) + "Try Again");
     channelDialog->setEnabled(true);
 }
 
@@ -194,6 +195,7 @@ void downloadVideoWidget::onChannelSubscribeRequestError(int err)
     /*QMessageBox::warning(this, "Error Occured", "Error processing "+
                          QString(this->sender()->metaObject()->className())+", errno = " +
                          QString::number(err)+", type = " + Errno::initErrnoMap().value(err));*/
+    QMessageBox::warning(this, "Error Uccured", "Error:" + QString::number(err) + "Try Again");
     createChannelDialog->setEnabled(true);
 }
 
@@ -211,6 +213,7 @@ void downloadVideoWidget::onApplyChannelRequestError(int err)
     /*QMessageBox::warning(this, "Error Occured", "Error processing "+
                          QString(this->sender()->metaObject()->className())+", errno = " +
                          QString::number(err)+", type = " + Errno::initErrnoMap().value(err));*/
+    QMessageBox::warning(this, "Error Uccured", "Error:" + QString::number(err) + "Try Again");
     createChannelDialog->setEnabled(true);
 }
 
@@ -219,6 +222,11 @@ void downloadVideoWidget::onLoginAccepted()
 #ifndef QT_NO_CURSOR
         setCursor(Qt::WaitCursor);
 #endif
+
+    SettingsStorage::setValue("server_url",QVariant("http://demo64.geo2tag.org/"),"common");
+    SettingsStorage::setValue("server_port",QVariant("80"),"common");
+    qDebug() << SettingsStorage::getValue("common/server_url", QVariant(DEFAULT_SERVER)).toString() <<  SettingsStorage::getValue("common/server_port", QVariant(DEFAULT_PORT)).toString();
+
     QString login;
     QString password;
     QString email;
@@ -228,7 +236,7 @@ void downloadVideoWidget::onLoginAccepted()
         email = loginDialog->getEmail();
     qDebug() << login << password << email;
 
-    /*if (loginDialog.email)
+    if (loginDialog->email)
     {
         m_addUserQuery->setQuery(login, password, email);
         m_addUserQuery->doRequest();
@@ -237,33 +245,31 @@ void downloadVideoWidget::onLoginAccepted()
     {
         m_loginQuery->setQuery(login, password);
         m_loginQuery->doRequest();
-    }*/
+    }
 }
 
 void downloadVideoWidget::onChannelAccepted()
 {
-/*#ifndef QT_NO_CURSOR
+#ifndef QT_NO_CURSOR
         setCursor(Qt::WaitCursor);
 #endif
-    int index = channelDialog.getCurrentRow();
-    qDebug() << "current row:" << index;
     QString channelName = channelDialog->getChannelName();
 
     Channel channel(channelName);
 
-    qreal lat = channelDialog.getLatatitude().toDouble();
-    qreal lon = channelDialog.getLongitude().toDouble();
-    QString name = channelDialog.getName();
+    qreal lat = channelDialog->getLatatitude().toDouble();
+    qreal lon = channelDialog->getLongitude().toDouble();
+    QString name = channelDialog->getName();
 
     m_writeTagQuery->setChannel(channel);
     m_writeTagQuery->setSession(m_session);
     m_writeTagQuery->setTag(Tag(0.0, lat, lon, name));
-    m_writeTagQuery->doRequest();*/
+    m_writeTagQuery->doRequest();
 }
 
 void downloadVideoWidget::onSubscribeAccepted()
 {
-/*#ifndef QT_NO_CURSOR
+#ifndef QT_NO_CURSOR
     setCursor(Qt::WaitCursor);
 #endif
 
@@ -271,12 +277,12 @@ void downloadVideoWidget::onSubscribeAccepted()
     Channel channel(channelName);
     //do subscribe
     m_subscribeChannelQuery->setQuery(channel, m_session);
-    m_subscribeChannelQuery->doRequest();*/
+    m_subscribeChannelQuery->doRequest();
 }
 
 void downloadVideoWidget::onAddChannelAccepted()
 {
-/*#ifndef QT_NO_CURSOR
+#ifndef QT_NO_CURSOR
     setCursor(Qt::WaitCursor);
 #endif
 
@@ -285,17 +291,16 @@ void downloadVideoWidget::onAddChannelAccepted()
     QString url = createChannelDialog->getUrl();
 
     m_applyChannelQuery->setQuery(Channel(name, description, url), m_session);
-    m_applyChannelQuery->doRequest();*/
+    m_applyChannelQuery->doRequest();
 }
 
-/*void downloadVideoWidget::onRequestError(int errno)
+void downloadVideoWidget::onRequestError(int err)
 {
     /*writeToStatusLog("Error processing "+
                      QString(this->sender()->metaObject()->className())+", errno = " +
                      QString::number(errno)+", type = " + Errno::initErrnoMap().value(errno));*/
-    /*qDebug() << "Error "<< errno << " occured";
-}*/
-
+    qDebug() << "Error "<< errno << " occured";
+}
 
 void downloadVideoWidget::onStartDownloadingVideo(QString pathToVideoFile)
 {

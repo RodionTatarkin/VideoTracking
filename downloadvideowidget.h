@@ -6,6 +6,14 @@
 #include "logindialog.h"
 #include "channeldialog.h"
 #include "createchanneldialog.h"
+#include "LoginQuery.h"
+#include "AddUserQuery.h"
+#include "AvailableChannelsQuery.h"
+#include "SubscribedChannelsQuery.h"
+#include "SubscribeChannelQuery.h"
+#include "WriteTagQuery.h"
+#include "ApplyChannelQuery.h"
+#include "Channel.h"
 
 class downloadVideoWidget : public QWidget
 {
@@ -17,9 +25,9 @@ class downloadVideoWidget : public QWidget
     ChannelDialog * channelDialog;
     CreateChannelDialog * createChannelDialog;
 
-    //Session m_session;
+    Session m_session;
 
-    /*QList<Channel> m_subscribedChannels;
+    QList<Channel> m_subscribedChannels;
     QList<Channel> m_availableChannels;
 
     LoginQuery * m_loginQuery;
@@ -27,10 +35,8 @@ class downloadVideoWidget : public QWidget
     AvailableChannelsQuery * m_availableChannelsQuery;
     SubscribedChannelsQuery * m_subscribedChannelsQuery;
     SubscribeChannelQuery * m_subscribeChannelQuery;
-    UnsubscribeChannelQuery * m_unsubscribeChannelQuery;
-    LoadTagsQuery * m_loadTagsQuery;
     WriteTagQuery * m_writeTagQuery;
-    ApplyChannelQuery * m_applyChannelQuery;*/
+    ApplyChannelQuery * m_applyChannelQuery;
 
     void initQueries();
 
@@ -46,7 +52,7 @@ private slots:
     void onChannelSubscribeSuccess();
     void onApplyChannelSuccess();
 
-    //void onRequestError(int errno);
+    void onRequestError(int err);
     void onLoginRequestError(int err);
     void onChannelRequestError(int err);
     void onChannelSubscribeRequestError(int err);

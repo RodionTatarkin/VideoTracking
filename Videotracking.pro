@@ -20,8 +20,14 @@ symbian:TARGET.CAPABILITY += NetworkServices
 # the following lines and add the respective components to the 
 # MOBILITY variable. 
 CONFIG += mobility
+
+INCLUDEPATH += . ../maps/inc ../common/inc ../http_requests/inc
+
 MOBILITY += location
 MOBILITY += multimedia
+
+LIBS += -L../lib/ -lcommon -lqjson -lwikigpsHttp -lwikigpsJson
+# LIBS += -L../lib/ -lmaps -lqjson -lcommon -lwikigpsHttp -lwikigpsJson
 
 SOURCES += main.cpp \
     cam.cpp \

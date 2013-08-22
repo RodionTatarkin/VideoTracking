@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QPushButton>
+#include "Channel.h"
 
 class CreateChannelDialog : public QDialog
 {
@@ -22,7 +23,7 @@ class CreateChannelDialog : public QDialog
     QPushButton * m_addChannelButton;
 
 public:
-    explicit CreateChannelDialog(QWidget *parent = 0);
+    explicit CreateChannelDialog(QList<Channel> m_availableChannels, QWidget *parent);
 
     QString getChannelName();
     QString getName();

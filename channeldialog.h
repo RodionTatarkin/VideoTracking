@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QLabel>
+#include "Channel.h"
 
 class ChannelDialog : public QDialog
 {
@@ -21,7 +22,7 @@ class ChannelDialog : public QDialog
     QLabel * m_latatitudeLabel;
 
 public:
-    explicit ChannelDialog(/*QList<Channel> m_subscribedChannels,*/ QWidget *parent = 0);
+    explicit ChannelDialog(QList<Channel> m_subscribedChannels, QWidget *parent = 0);
     
 signals:
     void onAccepted();

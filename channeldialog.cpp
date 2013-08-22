@@ -3,7 +3,7 @@
 #include <QListWidgetItem>
 #include <QMessageBox>
 
-ChannelDialog::ChannelDialog(/*QList<Channel> m_subscribedChannels,*/ QWidget *parent) :
+ChannelDialog::ChannelDialog(QList<Channel> m_subscribedChannels, QWidget *parent) :
     QDialog(parent)
 {
     m_selectButton = new QPushButton("Write Tag", this);
@@ -26,12 +26,12 @@ ChannelDialog::ChannelDialog(/*QList<Channel> m_subscribedChannels,*/ QWidget *p
 
     m_channelsListWidget = new QListWidget(this);
 
-    /*foreach (Channel s, m_subscribedChannels)
+    foreach (Channel s, m_subscribedChannels)
     {
         QListWidgetItem * item = new QListWidgetItem(s.getName());
-        listWidget->addItem(item);
-    }*/
-    //m_channelsListWidget->setCurrentRow(1);
+        m_channelsListWidget->addItem(item);
+    }
+    m_channelsListWidget->setCurrentRow(1);
 
     setLayout(new QVBoxLayout());
     layout()->addWidget(m_channelsListWidget);
