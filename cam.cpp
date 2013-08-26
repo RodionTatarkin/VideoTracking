@@ -18,6 +18,7 @@
 #include <QGeoServiceProvider>
 #include <QGeoPositionInfoSource>
 #include <QFileDialog>
+#include <QLabel>
 
 QTM_USE_NAMESPACE
 
@@ -26,7 +27,6 @@ Cam::Cam(QWidget *parent) :
 {
     QDialog * m_selectDialog;
     QList <QByteArray> cameras = QCamera::availableDevices();
-    time = 0;
     if (cameras.count() == 0)
     {
         QMessageBox msgBox;
@@ -52,13 +52,14 @@ Cam::Cam(QWidget *parent) :
         delete m_selectDialog;
     }
 
-    currentVideo = NULL;
     setCamera();
 
     // --Location--
 
+    updateInterval = DEFAULT_UPDATE_INTERVAL;
     source = QGeoPositionInfoSource::createDefaultSource(this);
-    source->setUpdateInterval(10000);
+    source->setUpdateInterval(updateInterval);
+    qDebug() << "Minimum value for update intervals" << source->minimumUpdateInterval();
     connect(source, SIGNAL(positionUpdated(QGeoPositionInfo)), this, SLOT(positionUpdated(QGeoPositionInfo)));
 
     /*QStringList infoSources;
@@ -112,12 +113,23 @@ void Cam::setCamera()
     layout()->addWidget(m_stopButton);
     connect(m_stopButton, SIGNAL(clicked()), this, SLOT(stop()));
 
+    QHBoxLayout * layUpdateInterval = new QHBoxLayout();
+    layUpdateInterval->addWidget(new QLabel("Update Interval(msec):", this));
+    m_updateIntervalBox = new QComboBox(this);
+    m_updateIntervalBox->addItem(QString::number(30000));
+    m_updateIntervalBox->addItem(QString::number(DEFAULT_UPDATE_INTERVAL));
+    m_updateIntervalBox->addItem(QString::number(60000));
+    m_updateIntervalBox->addItem(QString::number(90000));
+    m_updateIntervalBox->setCurrentIndex(1);
+    layUpdateInterval->addWidget(m_updateIntervalBox);
+
+    layout()->addItem(layUpdateInterval);
+
     m_camera->setViewfinder(m_viewfinder);
 
     m_captureButton->setEnabled(true);
     m_stopButton->setEnabled(true);
     //updateRecorderState(m_mediaRecorder->state());
-
 
 
     connect(m_mediaRecorder, SIGNAL(stateChanged(QMediaRecorder::State)), this, SLOT(recordingStarted(QMediaRecorder::State)));
@@ -157,7 +169,7 @@ void Cam::downloadingVideo()
     switch(ret)
     {
     case QMessageBox::Ok:
-        emit(downloadVideo(currentVideo->pathVideo));
+        emit(downloadVideo(currentVideo));
         break;
     case QMessageBox::Cancel:
         break;
@@ -173,6 +185,7 @@ void Cam::updateRecorderState(QMediaRecorder::State state)
     case QMediaRecorder::StoppedState:
         m_captureButton->setEnabled(true);
         m_stopButton->setEnabled(false);
+        m_updateIntervalBox->setEnabled(true);
         source->stopUpdates();
         downloadingVideo();
         break;
@@ -183,6 +196,9 @@ void Cam::updateRecorderState(QMediaRecorder::State state)
     case QMediaRecorder::RecordingState:
         m_captureButton->setEnabled(false);
         m_stopButton->setEnabled(true);
+        m_updateIntervalBox->setEnabled(false);
+        source->requestUpdate();
+        source->setUpdateInterval(m_updateIntervalBox->currentText().toInt());
         source->startUpdates();
         break;
     }
@@ -196,36 +212,27 @@ void Cam::updateRecordTime()
     //ui->statusbar->showMessage(str);
 }
 
-Cam::~Cam()
-{
-    delete currentVideo;
-}
-
-void Cam::timerEvent(QTimerEvent *)
-{
-    qDebug() << time++;
-}
-
-
 void Cam::record()
 {
-    QFileDialog fileDialog(NULL);
+    QFileDialog fileDialog(this);
     fileDialog.setFileMode(QFileDialog::AnyFile);
     fileDialog.setAcceptMode(QFileDialog::AcceptSave);
     if (fileDialog.exec() == QDialog::Accepted)
     {
         qDebug() << fileDialog.selectedFiles();
-        m_mediaRecorder->setOutputLocation(QUrl(fileDialog.selectedFiles().first()));
+        m_mediaRecorder->setOutputLocation(QUrl::fromLocalFile(fileDialog.selectedFiles().first()));
     }
-    delete currentVideo;
-    currentVideo = new GeoVideo();
-    currentVideo->pathVideo = m_mediaRecorder->outputLocation().toString();
-    assert(currentVideo->geoTags.isEmpty());
+    currentVideo.videoName = fileDialog.labelText(QFileDialog::FileName);
+    currentVideo.pathToVideo = m_mediaRecorder->outputLocation().toString();
+    currentVideo.pathToVideo = fileDialog.selectedFiles().first();
     m_mediaRecorder->record();
     updateRecordTime();
     qDebug() << m_mediaRecorder->error() << m_mediaRecorder->state();
     qDebug() << m_mediaRecorder->outputLocation();
 
+    m_updateIntervalBox->setEnabled(false);
+    source->requestUpdate();
+    source->setUpdateInterval(m_updateIntervalBox->currentText().toInt());
     source->startUpdates();
 }
 
@@ -234,39 +241,9 @@ void Cam::stop()
     m_mediaRecorder->stop();
 
     source->stopUpdates();
-    qDebug() << currentVideo->geoTags << currentVideo->pathVideo;
+    qDebug() << currentVideo.geoTags << currentVideo.pathToVideo << currentVideo.videoName << currentVideo.time;
     downloadingVideo();
 }
-
-/*void Cam::capture()
-{
-    //QUrl url("D:/");
-    m_camera->searchAndLock();
-    //m_mediaRecorder->setOutputLocation(url);
-    //assert(m_mediaRecorder->isAvailable());
-    m_mediaRecorder->record();
-    //assert(m_mediaRecorder->state() == QMediaRecorder::RecordingState);
-    assert(m_mediaRecorder->error() == QMediaRecorder::NoError);
-    qDebug() << m_mediaRecorder->outputLocation().toString();
-    qDebug() << m_mediaRecorder->errorString();
-    //m_camera->unlock();
-    m_captureButton->setDisabled(TRUE);
-    m_stopButton->setDisabled(FALSE);
-    //timer = startTimer(1000);
-}*/
-
-/*void Cam::stop()
-{
-    //QUrl url;
-    m_mediaRecorder->stop();
-    qDebug() << m_mediaRecorder->errorString();
-    //url = m_mediaRecorder->outputLocation();
-    //qDebug() << m_mediaRecorder->outputLocation().toString();
-    m_camera->unlock();
-    m_captureButton->setDisabled(FALSE);
-    m_stopButton->setDisabled(TRUE);
-    //killTimer(timer);
-}*/
 
 void Cam::displayRecorderError()
 {
@@ -288,6 +265,7 @@ void Cam::positionUpdated(QGeoPositionInfo info)
 {
     qDebug() << info;
     //currentVideo->geoTags.append(info);
-    currentVideo->geoTags << info;
+    currentVideo.geoTags << info;
+    currentVideo.time << QString::number(m_mediaRecorder->duration());
 }
 

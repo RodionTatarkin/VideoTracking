@@ -7,6 +7,7 @@
 #include <QMenu>
 #include "cam.h"
 #include "downloadvideowidget.h"
+#include "geovideo.h"
 
 class QMenu;
 class QAction;
@@ -21,7 +22,7 @@ signals:
 
 private slots:
     void newVideo();
-    void downloadVideo(QString pathToVideoFile);
+    void downloadVideo(GeoVideo currentVideo);
 
 private:
     void createActions();

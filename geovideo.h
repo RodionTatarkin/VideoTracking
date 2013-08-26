@@ -10,8 +10,11 @@ QTM_USE_NAMESPACE
 class GeoVideo
 {
 public:
-    QString pathVideo;
+    QString pathToVideo;
+    QString videoName;
+    QString url;
     QList <QGeoPositionInfo> geoTags;
+    QList <QString> time;
     GeoVideo();
 };
 

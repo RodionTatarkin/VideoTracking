@@ -15,14 +15,11 @@ class ChannelDialog : public QDialog
     QListWidget * m_channelsListWidget;
     QPushButton * m_selectButton;
     QLineEdit * m_nameEdit;
-    QLineEdit *  m_latatitudeEdit;
-    QLineEdit * m_longitudeEdit;
     QLabel * m_nameLabel;
-    QLabel * m_longitudeLabel;
-    QLabel * m_latatitudeLabel;
+    QLabel * m_linkLabel;
 
 public:
-    explicit ChannelDialog(QList<Channel> m_subscribedChannels, QWidget *parent = 0);
+    explicit ChannelDialog(QList<Channel> m_subscribedChannels, QString url, QWidget *parent);
     
 signals:
     void onAccepted();
@@ -32,8 +29,6 @@ private slots:
 
 public:
     QString getName();
-    QString getLongitude();
-    QString getLatatitude();
     QString getChannelName();
     
 };

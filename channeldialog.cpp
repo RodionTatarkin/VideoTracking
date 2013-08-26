@@ -3,26 +3,19 @@
 #include <QListWidgetItem>
 #include <QMessageBox>
 
-ChannelDialog::ChannelDialog(QList<Channel> m_subscribedChannels, QWidget *parent) :
+ChannelDialog::ChannelDialog(QList<Channel> m_subscribedChannels, QString url, QWidget *parent) :
     QDialog(parent)
 {
-    m_selectButton = new QPushButton("Write Tag", this);
+    m_selectButton = new QPushButton("Write Tags to geo2tag", this);
     connect(m_selectButton, SIGNAL(clicked()), this, SLOT(onSelectButton()));
 
     m_nameEdit = new QLineEdit(this);
 
-    m_longitudeEdit = new QLineEdit(this);
-
-    m_latatitudeEdit = new QLineEdit(this);
-
     m_nameLabel = new QLabel("name", this);
     m_nameLabel->setAlignment(Qt::AlignCenter);
 
-    m_longitudeLabel = new QLabel("longitude", this);
-    m_longitudeLabel->setAlignment(Qt::AlignCenter);
-
-    m_latatitudeLabel = new QLabel("latatitude", this);
-    m_latatitudeLabel->setAlignment(Qt::AlignCenter);
+    m_linkLabel = new QLabel("link to file:" + url, this);
+    m_linkLabel->setAlignment(Qt::AlignCenter);
 
     m_channelsListWidget = new QListWidget(this);
 
@@ -35,18 +28,15 @@ ChannelDialog::ChannelDialog(QList<Channel> m_subscribedChannels, QWidget *paren
 
     setLayout(new QVBoxLayout());
     layout()->addWidget(m_channelsListWidget);
+    layout()->addWidget(m_linkLabel);
     layout()->addWidget(m_nameLabel);
     layout()->addWidget(m_nameEdit);
-    layout()->addWidget(m_longitudeLabel);
-    layout()->addWidget(m_longitudeEdit);
-    layout()->addWidget(m_latatitudeLabel);
-    layout()->addWidget(m_latatitudeEdit);
     layout()->addWidget(m_selectButton);
 }
 
 void ChannelDialog::onSelectButton()
 {
-    if (m_nameEdit->text().isEmpty() || m_longitudeEdit->text().isEmpty() || m_latatitudeEdit->text().isEmpty())
+    if (m_nameEdit->text().isEmpty())
         QMessageBox::warning(this, tr("Not enough information"), tr("Not all fields are filled"));
     else
     {
@@ -61,16 +51,6 @@ void ChannelDialog::onSelectButton()
 QString ChannelDialog::getName()
 {
     return m_nameEdit->text();
-}
-
-QString ChannelDialog::getLongitude()
-{
-    return m_longitudeEdit->text();
-}
-
-QString ChannelDialog::getLatatitude()
-{
-    return m_latatitudeEdit->text();
 }
 
 QString ChannelDialog::getChannelName()

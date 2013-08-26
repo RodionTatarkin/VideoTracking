@@ -14,10 +14,14 @@
 #include "WriteTagQuery.h"
 #include "ApplyChannelQuery.h"
 #include "Channel.h"
+#include "geovideo.h"
 
 class downloadVideoWidget : public QWidget
 {
     Q_OBJECT
+
+    int doneRequests;
+    QString m_name;
 
     QLabel * m_downloadVideoLabel;
 
@@ -37,6 +41,8 @@ class downloadVideoWidget : public QWidget
     SubscribeChannelQuery * m_subscribeChannelQuery;
     WriteTagQuery * m_writeTagQuery;
     ApplyChannelQuery * m_applyChannelQuery;
+
+    GeoVideo currentVideo;
 
     void initQueries();
 
@@ -69,7 +75,7 @@ public:
 signals:
     
 public slots:
-    void onStartDownloadingVideo(QString pathToVideoFile);
+    void onStartDownloadingVideo(GeoVideo video);
     
 };
 

@@ -30,15 +30,17 @@ class FtpDialog : public QDialog
 
     QHash<QString, bool> isDirectory;
     QString currentPath;
+    QString ftpUrl;
     QFtp * ftp;
     QFile * file;
 
     QNetworkSession * networkSession;
 
     QString m_pathToVideoFile;
+    QString m_videoFileName;
 
 public:
-    explicit FtpDialog(QWidget *parent = 0, QString pathToVideoFile = 0);
+    explicit FtpDialog(QWidget *parent = 0, QString pathToVideoFile = 0, QString videoFileName = 0);
 
     QString getUrlToVideoFile();
     

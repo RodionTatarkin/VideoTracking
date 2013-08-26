@@ -7,10 +7,11 @@
 #include <QUrl>
 #include <QMessageBox>
 
-FtpDialog::FtpDialog(QWidget *parent, QString pathToVideoFile) :
+FtpDialog::FtpDialog(QWidget *parent, QString pathToVideoFile, QString videoFileName) :
     QDialog(parent)
 {
     m_pathToVideoFile = pathToVideoFile;
+    m_videoFileName = videoFileName;
     ftp = NULL;
 
     ftpServerLabel = new QLabel(tr("Ftp &server:"), this);
@@ -170,6 +171,7 @@ void FtpDialog::onConnectOrDisconnect()
 
     fileList->clear();
     currentPath.clear();
+    ftpUrl.clear();
     isDirectory.clear();
 
     QUrl url(ftpServerLineEdit->text());
@@ -190,6 +192,7 @@ void FtpDialog::onConnectOrDisconnect()
             ftp->cd(url.path());
     }
 
+    ftpUrl = ftpServerLineEdit->text();
     fileList->setEnabled(true);
     connectButton->setEnabled(false);
     connectButton->setText(tr("Disconnect"));
@@ -250,7 +253,7 @@ void FtpDialog::ftpCommandFinished(int commandId, bool error)
         {
             statusLabel->setText(tr("Uploaded %1 to current directory.").arg(file->fileName()));
             cdToParentButton->setEnabled(false);
-            QMessageBox::information(this, tr("FTP"), tr("The file was successfully uploaded to %1").arg(ftpServerLineEdit->text()));
+            QMessageBox::information(this, tr("FTP"), tr("The file was successfully uploaded to %1").arg(ftpUrl));
             accept();
         }
         delete file;
@@ -303,17 +306,10 @@ void FtpDialog::uploadFile()
 {
     //qDebug() << "!" << QFile::exists(m_pathToVideoFile) << "!";
 
-    file = new QFile("D:/VideoTracking/Videotracking-build-simulator-Simulator_Qt_for_MinGW_4_4__Qt_SDK_______/copyrightnotice.txt");
-    qDebug() << "!" << QFile::exists("D:/VideoTracking/Videotracking-build-simulator-Simulator_Qt_for_MinGW_4_4__Qt_SDK_______/copyrightnotice.txt") << "!";
-    /*if (!file->open(QIODevice::WriteOnly)) {
-        QMessageBox::information(this, tr("FTP"),
-                                 tr("Unable to save the file %1: %2.")
-                                 .arg(fileName).arg(file->errorString()));
-        delete file;
-        return;
-    }*/
+    file = new QFile(m_pathToVideoFile);
+    qDebug() << "!" << QFile::exists(m_pathToVideoFile) << "!";
 
-    ftp->put(file, "myNewVideoFile.txt", QFtp::Ascii);
+    ftp->put(file, m_videoFileName, QFtp::Binary);
 
     //progressDialog->setLabelText(tr("Downloading %1...").arg(m_pathToVideoFile));
     uploadButton->setEnabled(false);
@@ -349,6 +345,10 @@ void FtpDialog::updateDataTransferProgress(qint64 readBytes, qint64 totalBytes)
 
 QString FtpDialog::getUrlToVideoFile()
 {
-    qDebug() << currentPath;
-    return currentPath;
+    QString url;
+    url += ftpUrl;
+    url += currentPath;
+    url += "/";
+    url += m_videoFileName;
+    return url;
 }
