@@ -116,6 +116,7 @@ void Cam::setCamera()
     QHBoxLayout * layUpdateInterval = new QHBoxLayout();
     layUpdateInterval->addWidget(new QLabel("Update Interval(msec):", this));
     m_updateIntervalBox = new QComboBox(this);
+    m_updateIntervalBox->addItem(QString::number(5000));
     m_updateIntervalBox->addItem(QString::number(30000));
     m_updateIntervalBox->addItem(QString::number(DEFAULT_UPDATE_INTERVAL));
     m_updateIntervalBox->addItem(QString::number(60000));
@@ -223,6 +224,7 @@ void Cam::record()
         m_mediaRecorder->setOutputLocation(QUrl::fromLocalFile(fileDialog.selectedFiles().first()));
     }
     currentVideo.videoName = fileDialog.labelText(QFileDialog::FileName);
+    currentVideo.videoName = "MyVideo";
     currentVideo.pathToVideo = m_mediaRecorder->outputLocation().toString();
     currentVideo.pathToVideo = fileDialog.selectedFiles().first();
     m_mediaRecorder->record();

@@ -15,6 +15,9 @@
 #include "ApplyChannelQuery.h"
 #include "Channel.h"
 #include "geovideo.h"
+#include <QProgressDialog>
+#include "ftpdialog.h"
+#include "setdbquery.h"
 
 class downloadVideoWidget : public QWidget
 {
@@ -25,9 +28,12 @@ class downloadVideoWidget : public QWidget
 
     QLabel * m_downloadVideoLabel;
 
+    QProgressDialog * m_progressDialog;
+
     LoginDialog * loginDialog;
     ChannelDialog * channelDialog;
     CreateChannelDialog * createChannelDialog;
+    FtpDialog * ftpDialog;
 
     Session m_session;
 
@@ -41,6 +47,7 @@ class downloadVideoWidget : public QWidget
     SubscribeChannelQuery * m_subscribeChannelQuery;
     WriteTagQuery * m_writeTagQuery;
     ApplyChannelQuery * m_applyChannelQuery;
+    SetDBQuery * m_setDBQuery;
 
     GeoVideo currentVideo;
 
@@ -48,34 +55,41 @@ class downloadVideoWidget : public QWidget
 
     void getSubscribedChannels();
 
-    void formChannelList();
+    //void formChannelList();
 
 private slots:
+    void formChannelList();
+
     void onLoginSuccess();
     void onAvailableChannelsSuccess();
     void onSubscribedChannelsSuccess();
     void onWriteTagSuccess();
     void onChannelSubscribeSuccess();
     void onApplyChannelSuccess();
+    void onSetDBSuccess();
 
     void onRequestError(int err);
     void onLoginRequestError(int err);
     void onChannelRequestError(int err);
     void onChannelSubscribeRequestError(int err);
     void onApplyChannelRequestError(int err);
+    void onSetDBRequestError(int err);
 
     void onLoginAccepted();
     void onChannelAccepted();
     void onSubscribeAccepted();
     void onAddChannelAccepted();
 
+    void onStartDownloadingVideo(GeoVideo video);
+
 public:
     explicit downloadVideoWidget(QWidget *parent = 0);
     
 signals:
+    void finished();
     
-public slots:
-    void onStartDownloadingVideo(GeoVideo video);
+/*public slots:
+    void onStartDownloadingVideo(GeoVideo video);*/
     
 };
 

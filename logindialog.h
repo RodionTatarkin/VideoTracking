@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QCheckBox>
+#include "loadinglabel.h"
 
 class LoginDialog : public QDialog
 {
@@ -25,6 +26,8 @@ class LoginDialog : public QDialog
 
 public:
     explicit LoginDialog(QWidget *parent = 0);
+
+    LoadingLabel * m_loadingLabel;
 
     bool email;
 

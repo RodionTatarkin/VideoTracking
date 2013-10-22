@@ -11,7 +11,7 @@ CreateChannelDialog::CreateChannelDialog(QList<Channel> m_availableChannels, QWi
         QListWidgetItem * item = new QListWidgetItem(s.getName());
         m_channelsListWidget->addItem(item);
     }
-    m_channelsListWidget->setCurrentRow(1);
+    m_channelsListWidget->setCurrentRow(0);
 
     m_subscribeButton = new QPushButton("Subscribe", this);
     connect(m_subscribeButton, SIGNAL(clicked()), this, SLOT(onSubscribeChannelButton()));

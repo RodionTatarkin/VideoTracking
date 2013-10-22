@@ -12,6 +12,7 @@
 #include <QHash>
 #include <QFile>
 #include <QNetworkSession>
+#include <QProgressDialog>
 
 class FtpDialog : public QDialog
 {

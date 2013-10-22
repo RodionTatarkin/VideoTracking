@@ -17,6 +17,9 @@ downloadVideoWidget::downloadVideoWidget(QWidget *parent) :
     m_downloadVideoLabel->setText("Downloading Video");
     m_downloadVideoLabel->setAlignment(Qt::AlignCenter);
 
+    m_progressDialog = new QProgressDialog(this);
+    //m_progressDialog->setCancelButton(NULL);
+
     setLayout(new QVBoxLayout());
     layout()->addWidget(m_downloadVideoLabel);
 
@@ -33,7 +36,11 @@ void downloadVideoWidget::initQueries()
     m_subscribeChannelQuery = new SubscribeChannelQuery();
     m_writeTagQuery = new WriteTagQuery();
     m_applyChannelQuery = new ApplyChannelQuery();
+    m_setDBQuery = new SetDBQuery();
 
+
+    connect(m_setDBQuery, SIGNAL(success()), this, SLOT(onSetDBSuccess()));
+    connect(m_setDBQuery, SIGNAL(errorOccured(int)), this, SLOT(onSetDBRequestError(int)));
 
     connect(m_loginQuery,SIGNAL(success()),this, SLOT(onLoginSuccess()));
     connect(m_loginQuery, SIGNAL(errorOccured(int)), this, SLOT(onLoginRequestError(int)));
@@ -68,6 +75,10 @@ void downloadVideoWidget::onLoginSuccess()
     QMessageBox::information(this, "Login Success", "You've successfully logined");
 
     m_session = m_loginQuery->getSession();
+
+    /*m_setDBQuery->setDBName("vblog");
+    m_setDBQuery->setSession(m_session);
+    m_setDBQuery->doRequest();*/
 
     m_availableChannelsQuery->setQuery(m_session);
     m_availableChannelsQuery->doRequest();
@@ -118,17 +129,20 @@ void downloadVideoWidget::onSubscribedChannelsSuccess()
 void downloadVideoWidget::onWriteTagSuccess()
 {
     doneRequests++;
+    m_progressDialog->setValue(doneRequests);
     if (doneRequests == currentVideo.geoTags.count())
     {
 #ifndef QT_NO_CURSOR
         setCursor(Qt::ArrowCursor);
 #endif
+        m_progressDialog->hide();
         channelDialog->accept();
         QMessageBox::information(this, "Write Tag Success", "You've successfully written Tags");
+        emit(finished());
     }
     else
     {
-        m_writeTagQuery->setTag(Tag(0.0, currentVideo.geoTags.at(doneRequests).coordinate().latitude(), currentVideo.geoTags.at(doneRequests).coordinate().longitude(), m_name, currentVideo.time.at(doneRequests), currentVideo.url));
+        m_writeTagQuery->setTag(Tag(0.0, currentVideo.geoTags.at(doneRequests).coordinate().latitude(), currentVideo.geoTags.at(doneRequests).coordinate().longitude(), m_name, currentVideo.time.at(doneRequests), currentVideo.url, currentVideo.geoTags.at(doneRequests).timestamp()));
         m_writeTagQuery->doRequest();
     }
     //writeToStatusLog("WriteTag request succeed");
@@ -152,6 +166,11 @@ void downloadVideoWidget::onApplyChannelSuccess()
     QMessageBox::information(this, "New Channel", "You've successfully created new Channel");
 }
 
+void downloadVideoWidget::onSetDBSuccess()
+{
+    qDebug() << "SetDBQuery Success";
+}
+
 void downloadVideoWidget::onLoginRequestError(int err)
 {
 #ifndef QT_NO_CURSOR
@@ -166,7 +185,7 @@ void downloadVideoWidget::onLoginRequestError(int err)
     /*QMessageBox::warning(this, "Error Occured", "Error processing "+
                          QString(this->sender()->metaObject()->className())+", errno = " +
                          QString::number(err)+", type = " + Errno::initErrnoMap().value(err));*/
-    QMessageBox::warning(this, "Error Uccured", "Error:" + QString::number(err) + "Try Again");
+    QMessageBox::warning(this, "Error Uccured", "Error:" + QString::number(err) + ". Try Again");
 
     loginDialog->setEnabled(true);
 }
@@ -225,14 +244,22 @@ void downloadVideoWidget::onApplyChannelRequestError(int err)
     createChannelDialog->setEnabled(true);
 }
 
+void downloadVideoWidget::onSetDBRequestError(int err)
+{
+    qDebug() << "Error " + QString::number(err) + " Occured";
+}
+
 void downloadVideoWidget::onLoginAccepted()
 {
 #ifndef QT_NO_CURSOR
         setCursor(Qt::WaitCursor);
 #endif
 
-    SettingsStorage::setValue("server_url",QVariant("http://demo64.geo2tag.org/"),"common");
-    SettingsStorage::setValue("server_port",QVariant("80"),"common");
+    //SettingsStorage::setValue("server_url",QVariant("http://demo64.geo2tag.org/"),"common");
+    //SettingsStorage::setValue("server_url",QVariant("http://debug.geo2tag.org/"),"common");
+    SettingsStorage::setValue("server_url",QVariant("http://127.0.0.1/"),"common");
+    //SettingsStorage::setValue("server_url",QVariant("http://194.85.173.9/"),"common");
+    //SettingsStorage::setValue("server_port",QVariant("20005"),"common");
     qDebug() << SettingsStorage::getValue("common/server_url", QVariant(DEFAULT_SERVER)).toString() <<  SettingsStorage::getValue("common/server_port", QVariant(DEFAULT_PORT)).toString();
 
     QString login;
@@ -248,11 +275,15 @@ void downloadVideoWidget::onLoginAccepted()
     {
         m_addUserQuery->setQuery(login, password, email);
         m_addUserQuery->doRequest();
+        loginDialog->m_loadingLabel->setString("Adding new User to geo2tag");
+        loginDialog->m_loadingLabel->start();
     }
     else
     {
         m_loginQuery->setQuery(login, password);
         m_loginQuery->doRequest();
+        loginDialog->m_loadingLabel->setString("Login to geo2tag");
+        loginDialog->m_loadingLabel->start();
     }
 }
 
@@ -262,7 +293,6 @@ void downloadVideoWidget::onChannelAccepted()
         setCursor(Qt::WaitCursor);
 #endif
     QString channelName = channelDialog->getChannelName();
-    //QString channelName = "Rodion";
 
     Channel channel(channelName);
 
@@ -271,8 +301,12 @@ void downloadVideoWidget::onChannelAccepted()
     doneRequests = 0;
     m_writeTagQuery->setChannel(channel);
     m_writeTagQuery->setSession(m_session);
-    m_writeTagQuery->setTag(Tag(0.0, currentVideo.geoTags.at(0).coordinate().latitude(), currentVideo.geoTags.at(0).coordinate().longitude(), m_name, currentVideo.time.at(0), currentVideo.url));
+    m_writeTagQuery->setTag(Tag(0.0, currentVideo.geoTags.at(0).coordinate().latitude(), currentVideo.geoTags.at(0).coordinate().longitude(), m_name, currentVideo.time.at(0), currentVideo.url, currentVideo.geoTags.at(0).timestamp()));
     m_writeTagQuery->doRequest();
+    m_progressDialog->setLabelText(tr("Writing Tags..."));
+    m_progressDialog->setMaximum(currentVideo.geoTags.count());
+    m_progressDialog->setValue(0);
+    m_progressDialog->exec();
 }
 
 void downloadVideoWidget::onSubscribeAccepted()
@@ -308,22 +342,28 @@ void downloadVideoWidget::onRequestError(int err)
                      QString(this->sender()->metaObject()->className())+", errno = " +
                      QString::number(errno)+", type = " + Errno::initErrnoMap().value(errno));*/
     qDebug() << "Error "<< errno << " occured";
+    QMessageBox::warning(this, "Error Occured", "Error " + QString::number(err) + " Occured");
+    close();
 }
 
 void downloadVideoWidget::onStartDownloadingVideo(GeoVideo video)
 {
     currentVideo = video;
     // -- ftp server --
-    FtpDialog ftpDialog(this, currentVideo.pathToVideo, currentVideo.videoName);
-    connect(&ftpDialog, SIGNAL(rejected()), this, SLOT(close()));
-    if (ftpDialog.exec())
+    ftpDialog = new FtpDialog(this, currentVideo.pathToVideo, currentVideo.videoName);
+    //connect(&ftpDialog, SIGNAL(rejected()), this, SLOT(close()));
+    if (ftpDialog->exec())
     {
-        currentVideo.url = ftpDialog.getUrlToVideoFile();
+        currentVideo.url = ftpDialog->getUrlToVideoFile();
         qDebug() << currentVideo.url;
 
         // -- Login --
         loginDialog = new LoginDialog(this);
         connect(loginDialog, SIGNAL(onAccepted()), this, SLOT(onLoginAccepted()));
+        connect(m_loginQuery, SIGNAL(success()), loginDialog, SLOT(accept()));
         loginDialog->exec();
+        qDebug() << "Hello World: onStartDownloadingVideo function";
     }
+    else
+        emit(finished());
 }

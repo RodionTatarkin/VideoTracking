@@ -15,6 +15,7 @@ ChannelDialog::ChannelDialog(QList<Channel> m_subscribedChannels, QString url, Q
     m_nameLabel->setAlignment(Qt::AlignCenter);
 
     m_linkLabel = new QLabel("link to file:" + url, this);
+    m_linkLabel->setWordWrap(true);
     m_linkLabel->setAlignment(Qt::AlignCenter);
 
     m_channelsListWidget = new QListWidget(this);
@@ -24,7 +25,7 @@ ChannelDialog::ChannelDialog(QList<Channel> m_subscribedChannels, QString url, Q
         QListWidgetItem * item = new QListWidgetItem(s.getName());
         m_channelsListWidget->addItem(item);
     }
-    m_channelsListWidget->setCurrentRow(1);
+    m_channelsListWidget->setCurrentRow(0);
 
     setLayout(new QVBoxLayout());
     layout()->addWidget(m_channelsListWidget);

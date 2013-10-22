@@ -5,8 +5,11 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
-    /*QWidget * widget = new QWidget;
-    setCentralWidget(widget);*/
+    m_videoTrackingWidget = new QLabel("Video Tracking", this);
+    m_videoTrackingWidget->setAlignment(Qt::AlignCenter);
+    setCentralWidget(m_videoTrackingWidget);
+    m_downloadVideoWidget = NULL;
+    m_cameraWidget = NULL;
 
     createActions();
     createMenus();
@@ -14,16 +17,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::newVideo()
 {
-    newVideoAction->setDisabled(TRUE);
+    newVideoAction->setDisabled(true);
 
-    cameraWidget = new Cam(this);
-    connect(cameraWidget, SIGNAL(downloadVideo(GeoVideo)), this, SLOT(downloadVideo(GeoVideo)));
-    setCentralWidget(cameraWidget);
+    m_cameraWidget = new Cam(this);
+    connect(m_cameraWidget, SIGNAL(downloadVideo(GeoVideo)), this, SLOT(downloadVideo(GeoVideo)));
+    setCentralWidget(m_cameraWidget);
 }
 
 void MainWindow::downloadVideo(GeoVideo currentVideo)
 {
     m_downloadVideoWidget = new downloadVideoWidget(this);
+    connect(this, SIGNAL(onStartDownloadingVideo(GeoVideo)), m_downloadVideoWidget, SLOT(onStartDownloadingVideo(GeoVideo)));
+    connect(m_downloadVideoWidget, SIGNAL(finished()), this, SLOT(onFinished()));
 
     setCentralWidget(m_downloadVideoWidget);
 
@@ -34,7 +39,18 @@ void MainWindow::downloadVideo(GeoVideo currentVideo)
     messageBox.setIcon(QMessageBox::Information);
     messageBox.exec();
 
-    m_downloadVideoWidget->onStartDownloadingVideo(currentVideo);
+    emit(onStartDownloadingVideo(currentVideo));
+    //m_downloadVideoWidget->onStartDownloadingVideo(currentVideo);
+}
+
+void MainWindow::onFinished()
+{
+    m_videoTrackingWidget = new QLabel("Video Tracking", this);
+    m_videoTrackingWidget->setAlignment(Qt::AlignCenter);
+    setCentralWidget(m_videoTrackingWidget);
+    m_downloadVideoWidget->close();
+    newVideoAction->setDisabled(false);
+    delete m_downloadVideoWidget;
 }
 
 

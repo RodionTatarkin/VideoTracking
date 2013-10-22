@@ -13,6 +13,10 @@ LoginDialog::LoginDialog(QWidget *parent) :
     m_labelEmail = new QLabel("Email", this);
     m_labelEmail->setAlignment(Qt::AlignCenter);
 
+    m_loadingLabel = new LoadingLabel(this);
+    m_loadingLabel->setText("Please Login");
+    m_loadingLabel->setAlignment(Qt::AlignCenter);
+
     m_loginEdit = new QLineEdit(this);
     m_passwordEdit = new QLineEdit(this);
     m_emailEdit = new QLineEdit(this);
@@ -35,6 +39,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     layout()->addWidget(m_registerCheckBox);
     layout()->addWidget(m_emailEdit);
     layout()->addWidget(m_userActionButton);
+    layout()->addWidget(m_loadingLabel);
 
     m_userActionButton->setDefault(true);
     //m_userActionButton->setFocus();

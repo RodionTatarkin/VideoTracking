@@ -21,12 +21,12 @@ symbian:TARGET.CAPABILITY += NetworkServices
 # MOBILITY variable. 
 CONFIG += mobility
 
-INCLUDEPATH += . ../maps/inc ../common/inc ../http_requests/inc
+INCLUDEPATH += . ../maps/inc ../common/inc ../http_requestsMyRodion/inc
 
 MOBILITY += location
 MOBILITY += multimedia
 
-LIBS += -L../lib/ -lcommon -lqjson -lwikigpsHttp -lwikigpsJson
+LIBS += -L../libMyRodion/ -lcommon -lqjson -lwikigpsHttpMyRodion -lwikigpsJson
 # LIBS += -L../lib/ -lmaps -lqjson -lcommon -lwikigpsHttp -lwikigpsJson
 
 SOURCES += main.cpp \
@@ -39,7 +39,8 @@ SOURCES += main.cpp \
     channeldialog.cpp \
     downloadvideowidget.cpp \
     ftpdialog.cpp \
-    createchanneldialog.cpp
+    createchanneldialog.cpp \
+    loadinglabel.cpp
 HEADERS += \
     cam.h \
     videowidget.h \
@@ -50,7 +51,8 @@ HEADERS += \
     channeldialog.h \
     downloadvideowidget.h \
     ftpdialog.h \
-    createchanneldialog.h
+    createchanneldialog.h \
+    loadinglabel.h
 FORMS +=
 
 # Please do not modify the following two lines. Required for deployment.
